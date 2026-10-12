@@ -1,0 +1,43 @@
+{
+  "system": {
+    "name": "NexaRack Blackwell-inspired Profile",
+    "simulation_only": true
+  },
+  "topology": {
+    "trays": 18,
+    "gpus_per_tray": 4,
+    "cpus": 36,
+    "interconnect_aggregate_tbps": 130
+  },
+  "gpu": {
+    "memory_gib": 192,
+    "memory_bandwidth_tbps": 8,
+    "fp16_tflops": 2500,
+    "fp8_tflops": 5000,
+    "max_power_w": 1200,
+    "idle_power_w": 120
+  },
+  "cpu": {
+    "cores_per_instance": 72,
+    "memory_gib_per_instance": 480,
+    "max_power_w": 500,
+    "idle_power_w": 80
+  },
+  "rack": {
+    "power_limit_w": 120000,
+    "cooling_capacity_w": 140000,
+    "ambient_c": 22,
+    "thermal_resistance_c_per_kw": 0.12
+  },
+  "scheduler": {
+    "default_parallel_gpus": 8,
+    "compute_efficiency": 0.35,
+    "memory_efficiency": 0.7,
+    "dispatch_overhead_ms": 0.2,
+    "interconnect_contention_floor": 0.15
+  },
+  "benchmark": {
+    "calibration_factor_fp16": 1,
+    "calibration_factor_fp8": 1
+  }
+}

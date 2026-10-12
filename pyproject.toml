@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexarack"
+version = "0.4.0"
+description = "Python simulator for rack-scale AI infrastructure"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = []
+
+[project.optional-dependencies]
+api = ["fastapi>=0.110", "uvicorn[standard]>=0.27"]
+
+[project.scripts]
+nexarack = "nexarack.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

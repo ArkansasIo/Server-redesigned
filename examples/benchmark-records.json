@@ -1,0 +1,12 @@
+[
+  {
+    "workload": "matrix",
+    "precision": "fp16",
+    "gpu_count": 8,
+    "operations_tflop": 100,
+    "memory_gib": 8,
+    "predicted_seconds": 0.12,
+    "measured_seconds": 0.13,
+    "notes": "Example only; replace with actual measurement."
+  }
+]
