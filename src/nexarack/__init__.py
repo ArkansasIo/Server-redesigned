@@ -1,2 +1,3 @@
-"""NexaRack AI server simulation platform."""
-__version__ = "0.4.0"
+"""NexaRack analytical rack-scale infrastructure simulator."""
+
+__version__ = "0.5.0"
