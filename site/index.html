@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08111e">
+<meta name="description" content="NexaRack browser demo for rack-scale AI infrastructure simulation.">
+<title>NexaRack — Infrastructure Console</title>
+<style>
+:root{color-scheme:dark;--bg:#08111e;--panel:#101f32;--panel2:#142841;--border:#28425d;--ink:#e9f2ff;--muted:#98aec5;--cyan:#64d5f0;--green:#6fe0b4;--amber:#ffc978;--red:#ff8f9b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% -20%,#153653 0,transparent 45%),var(--bg);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #2b7f9e;background:#146284;color:white;border-radius:8px;padding:9px 13px;font-weight:650}button:hover{filter:brightness(1.12)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}button.secondary{background:#1a2b40;border-color:var(--border)}button.danger{background:#462534;border-color:#8a4359}.shell{max-width:1260px;margin:auto;padding:25px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:18px}.eyebrow{letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:750;font-size:11px}.top h1{margin:3px 0;font-size:clamp(25px,4vw,38px);letter-spacing:-.04em}.sub,.muted,small{color:var(--muted)}.status{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--green)}.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}.section{margin-top:22px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.section h2{font-size:17px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:linear-gradient(140deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:13px;padding:17px;min-width:0}.metric-label{color:var(--muted);font-size:12px}.metric{font-size:clamp(24px,3vw,32px);font-weight:750;letter-spacing:-.035em;margin:6px 0 2px}.accent{color:var(--cyan)}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.7fr);gap:12px}.formrow{display:flex;align-items:end;gap:10px;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:5px;min-width:115px;flex:1}.field label{font-size:12px;color:var(--muted)}input,select{background:#091727;border:1px solid var(--border);border-radius:7px;color:var(--ink);padding:9px;min-width:0;width:100%}.bar{height:6px;border-radius:999px;background:#07121f;overflow:hidden;margin-top:10px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#35b7d2,var(--green));width:0;transition:width .25s}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}th,td{text-align:left;padding:10px;border-bottom:1px solid #263a50}th{color:var(--muted);font-weight:600}td .pill{border-radius:999px;padding:3px 7px;background:#20354b;font-size:11px}.empty{text-align:center;color:var(--muted);padding:26px}.footer{padding:22px 0 5px;border-top:1px solid var(--border);margin-top:24px;color:var(--muted);font-size:12px}.notice{border-left:3px solid var(--amber);background:#201d18;color:#e8d3ae;padding:12px 14px;border-radius:0 8px 8px 0;font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.hide{display:none}@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}}@media(max-width:450px){.shell{padding:16px}.grid{gap:8px}.card{padding:13px}.metric{font-size:24px}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+  <div><div class="eyebrow">Rack operations / simulation</div><h1>NexaRack <span class="accent">Console</span></h1><div class="sub">AI infrastructure planning · browser demo</div></div>
+  <div class="status"><span class="dot"></span><span id="mode">LOCAL DEMO ACTIVE</span></div>
+</header>
+<section class="section">
+ <div class="notice">Static GitHub Pages demo: values below are illustrative and run only in your browser. Start the Python API to use the actual NexaRack simulator.</div>
+</section>
+<section class="section">
+ <h2>Rack telemetry</h2>
+ <div class="grid">
+  <article class="card"><div class="metric-label">Logical GPUs</div><div class="metric" id="gpu-count">8</div><small id="gpu-sub">1 logical rack</small></article>
+  <article class="card"><div class="metric-label">GPU utilization</div><div class="metric accent" id="gpu-util">0%</div><div class="bar"><span id="util-bar"></span></div></article>
+  <article class="card"><div class="metric-label">Rack power</div><div class="metric" id="rack-power">—</div><small>Illustrative estimate</small></article>
+  <article class="card"><div class="metric-label">Rack temperature</div><div class="metric" id="rack-temp">22.0 °C</div><small id="energy">0.000 kWh accumulated</small></article>
+ </div>
+</section>
+<section class="section layout">
+ <article class="card">
+  <div class="section-head"><h2>Submit a workload</h2><small>FIFO demo scheduler</small></div>
+  <form id="job-form">
+   <div class="formrow">
+    <div class="field"><label for="kind">Workload type</label><select id="kind"><option value="matrix">Matrix compute</option><option value="llm-inference">LLM inference</option><option value="distributed-training">Distributed training</option><option value="memory-bandwidth">Memory bandwidth</option></select></div>
+    <div class="field"><label for="count">GPU count (1–72)</label><input id="count" type="number" min="1" max="72" value="4" required></div>
+    <button type="submit">Queue workload</button>
+   </div>
+  </form>
+  <div class="actions" style="margin-top:12px"><button class="secondary" id="advance">Advance 1 second</button><button class="secondary" id="advance-10">Advance 10 seconds</button><button class="danger" id="reset">Reset demo</button></div>
+  <p id="message" role="status" aria-live="polite" class="muted">Demo is ready.</p>
+ </article>
+ <article class="card">
+  <h2>System status</h2>
+  <div class="formrow"><div class="field"><label>Simulator</label><strong>Client-side demo</strong></div><div class="field"><label>Time</label><strong id="sim-time">0.0 s</strong></div></div>
+  <div class="formrow" style="margin-top:14px"><div class="field"><label>Queued</label><strong id="queued">0</strong></div><div class="field"><label>Active</label><strong id="active">0</strong></div><div class="field"><label>Completed</label><strong id="completed">0</strong></div></div>
+  <p class="muted">No account, server, or external API is contacted by this page.</p>
+ </article>
+</section>
+<section class="section card">
+ <div class="section-head"><h2>Workload queue</h2><small id="job-total">0 jobs</small></div>
+ <div class="table-wrap"><table><thead><tr><th>Job ID</th><th>Type</th><th>GPUs</th><th>Status</th><th>Elapsed</th></tr></thead><tbody id="jobs"><tr><td class="empty" colspan="5">No jobs queued</td></tr></tbody></table></div>
+</section>
+<section class="section card">
+ <div class="section-head"><h2>Latest telemetry</h2><button class="secondary" id="copy">Copy JSON</button></div>
+ <pre id="telemetry" style="white-space:pre-wrap;overflow-wrap:anywhere;color:#a9cce0;font-size:12px;margin-bottom:0">{}</pre>
+</section>
+<footer class="footer">NexaRack is an analytical simulator, not a cycle-accurate hardware emulator. Validate all assumptions against measured systems before making operational, procurement, or safety decisions. <a href="https://github.com/ArkansasIo/Server-redesigned" style="color:var(--cyan)">Source repository</a></footer>
+</main>
+<script>
+(function(){
+ "use strict";
+ const $ = id => document.getElementById(id);
+ const presets = {"matrix":{duration:18,util:0.88,power:520},"llm-inference":{duration:24,util:0.72,power:430},"distributed-training":{duration:32,util:0.94,power:590},"memory-bandwidth":{duration:15,util:0.55,power:360}};
+ let state;
+ function resetState(){state={time:0,nextId:1,jobs:[],energy:0};render();}
+ function notify(message){$("message").textContent=message;}
+ function queue(kind,count){
+   if(!Number.isInteger(count)||count<1||count>72) throw Error("GPU count must be an integer from 1 to 72.");
+   const id=state.nextId++;
+   state.jobs.push({id:"NR-"+String(id).padStart(4,"0"),kind,count,status:"queued",elapsed:0,duration:presets[kind].duration,util:presets[kind].util,power:presets[kind].power});
+   notify("Queued "+state.jobs[state.jobs.length-1].id+".");render();
+ }
+ function tick(seconds){
+   state.time+=seconds;
+   const activeGpu=new Set();
+   for(const job of state.jobs){
+     if(job.status==="queued"&&activeGpu.size+job.count<=72){job.status="running";job.started=state.time;}
+     if(job.status==="running"){
+       job.elapsed+=seconds;
+       for(let n=0;n<job.count;n++)activeGpu.add(job.id+":"+n);
+       if(job.elapsed>=job.duration)job.status="completed";
+     }
+   }
+   const running=state.jobs.filter(j=>j.status==="running");
+   const utilized=running.reduce((s,j)=>s+j.count*j.util,0);
+   const gpuCount=Math.min(72,Math.max(8,...state.jobs.map(j=>j.count)));
+   const power=running.reduce((s,j)=>s+j.count*j.power,0)+(gpuCount-running.reduce((s,j)=>s+j.count,0))*52;
+   state.energy+=power*seconds/3600000;
+   const temp=22+Math.min(32,power/150);
+   state.last={time_seconds:+state.time.toFixed(1),gpu_count:gpuCount,gpu_utilization_avg:+(utilized/gpuCount).toFixed(3),gpus_active:running.reduce((s,j)=>s+j.count,0),queued_jobs:state.jobs.filter(j=>j.status==="queued").length,active_jobs:running.length,completed_jobs:state.jobs.filter(j=>j.status==="completed").length,power:{rack_power_w:Math.round(power),rack_power_limit_w:12000,rack_temperature_c:+temp.toFixed(1),energy_kwh:+state.energy.toFixed(6)},note:"Illustrative client-side demo; not actual server telemetry."};
+   render();
+ }
+ function render(){
+   const jobs=state.jobs, running=jobs.filter(j=>j.status==="running"), queued=jobs.filter(j=>j.status==="queued"),completed=jobs.filter(j=>j.status==="completed");
+   const gpus=Math.min(72,Math.max(8,...jobs.map(j=>j.count)));
+   const avg=running.reduce((s,j)=>s+j.count*j.util,0)/gpus;
+   const power=running.reduce((s,j)=>s+j.count*j.power,0)+(gpus-running.reduce((s,j)=>s+j.count,0))*52;
+   const temp=22+Math.min(32,power/150);
+   $("gpu-count").textContent=gpus;$("gpu-sub").textContent="Illustrative logical GPUs";$("gpu-util").textContent=(avg*100).toFixed(1)+"%";$("util-bar").style.width=Math.max(0,Math.min(100,avg*100))+"%";
+   $("rack-power").textContent=(power/1000).toFixed(2)+" kW";$("rack-temp").textContent=temp.toFixed(1)+" °C";$("energy").textContent=state.energy.toFixed(4)+" kWh accumulated";$("sim-time").textContent=state.time.toFixed(1)+" s";
+   $("queued").textContent=queued.length;$("active").textContent=running.length;$("completed").textContent=completed.length;$("job-total").textContent=jobs.length+" jobs";
+   const tbody=$("jobs");tbody.replaceChildren();
+   if(!jobs.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=5;td.className="empty";td.textContent="No jobs queued";tr.append(td);tbody.append(tr);}
+   jobs.forEach(j=>{const tr=document.createElement("tr");[j.id,j.kind,j.count,j.status,j.elapsed.toFixed(1)+" s"].forEach((value,index)=>{const td=document.createElement("td");if(index===3){const pill=document.createElement("span");pill.className="pill";pill.textContent=value;td.append(pill);}else td.textContent=String(value);tr.append(td);});tbody.append(tr);});
+   if(!state.last)state.last={time_seconds:0,gpu_count:gpus,gpu_utilization_avg:0,gpus_active:0,queued_jobs:queued.length,active_jobs:0,completed_jobs:0,power:{rack_power_w:Math.round(power),rack_power_limit_w:12000,rack_temperature_c:+temp.toFixed(1),energy_kwh:+state.energy.toFixed(6)},note:"Illustrative client-side demo; not actual server telemetry."};
+   $("telemetry").textContent=JSON.stringify(state.last,null,2);
+ }
+ $("job-form").addEventListener("submit",event=>{event.preventDefault();try{queue($("kind").value,Number($("count").value));}catch(error){notify(error.message);}});
+ $("advance").addEventListener("click",()=>{tick(1);notify("Advanced demo by 1 second.");});
+ $("advance-10").addEventListener("click",()=>{tick(10);notify("Advanced demo by 10 seconds.");});
+ $("reset").addEventListener("click",()=>{resetState();notify("Demo state reset.");});
+ $("copy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("telemetry").textContent);notify("Telemetry JSON copied.");}catch(error){notify("Clipboard access unavailable. Select and copy the JSON manually.");}});
+ resetState();
+})();
+</script>
+</body>
+</html>
