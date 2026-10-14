@@ -26,9 +26,10 @@ class StorageTests(unittest.TestCase):
             self.assertEqual(rows[0]["status"], "completed")
 
     def test_limit_validation(self):
-        store = SimulationStore(":memory:")
-        with self.assertRaises(ValueError):
-            store.list_jobs(0)
+        with tempfile.TemporaryDirectory() as directory:
+            store = SimulationStore(Path(directory) / "state.sqlite3")
+            with self.assertRaises(ValueError):
+                store.list_jobs(0)
 
 
 if __name__ == "__main__":
